@@ -2,7 +2,7 @@
 #include <stdio.h> // fprintf
 #include <stdlib.h> // malloc
 
-#include <gcrypt.h>
+#include "gcrypt.h"
 
 #include "signal_protocol.h"
 

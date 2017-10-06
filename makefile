@@ -21,12 +21,17 @@ AX_DIR=./lib/libsignal-protocol-c
 AX_BDIR=$(AX_DIR)/build/src
 AX_PATH=$(AX_BDIR)/libsignal-protocol-c.a
 
+LGCRYPT_DIR=$(LDIR)/libgcrypt
+LGCRYPT_SRC=$(LGCRYPT_DIR)/src
+LGCRYPT_BUILD=$(LGCRYPT_DIR)/build
+LGCRYPT_PATH=$(LGCRYPT_BUILD)/libgcrypt.a
+
 PKGCFG_C=$(shell $(PKG_CONFIG) --cflags sqlite3 glib-2.0) \
 		 $(shell $(LIBGCRYPT_CONFIG) --cflags)
 PKGCFG_L=$(shell $(PKG_CONFIG) --libs sqlite3 glib-2.0) \
 		 $(shell $(LIBGCRYPT_CONFIG) --libs)
 
-HEADERS=-I$(AX_DIR)/src
+HEADERS=-I$(AX_DIR)/src -I$(LGCRYPT_DIR)/src
 CFLAGS += $(HEADERS) $(PKGCFG_C) -std=c11 -Wall -Wextra -Wpedantic \
 		  -Wstrict-overflow -fno-strict-aliasing -funsigned-char \
 		  -fno-builtin-memset
@@ -57,10 +62,10 @@ $(BDIR)/axc_crypto.o: $(SDIR)/axc_crypto.c $(BDIR)
 $(BDIR)/axc_store.o: $(SDIR)/axc_store.c $(BDIR)
 	$(CC) $(PICFLAGS) $(CPPFLAGS) -c $< -o $@
 
-$(BDIR)/libaxc.a: $(BDIR)/axc.o $(BDIR)/axc_crypto.o $(BDIR)/axc_store.o
+$(BDIR)/libaxc.a: $(BDIR)/axc.o $(BDIR)/axc_crypto.o $(BDIR)/axc_store.o $(LGCRYPT_PATH)
 	$(AR) rcs $@ $^
 
-$(BDIR)/libaxc-nt.a: $(BDIR)/axc-nt.o $(BDIR)/axc_crypto.o $(BDIR)/axc_store.o
+$(BDIR)/libaxc-nt.a: $(BDIR)/axc-nt.o $(BDIR)/axc_crypto.o $(BDIR)/axc_store.o $(LGCRYPT_PATH)
 	$(AR) rcs $@ $^
 
 $(AX_PATH):
@@ -69,6 +74,9 @@ $(AX_PATH):
 		cd build && \
 		$(CMAKE) $(CMAKE_FLAGS) ..  && \
 		$(MAKE)
+
+$(LGCRYPT_PATH):
+	$(MAKE) -C "$(LGCRYPT_DIR)" build/libgcrypt.a
 
 .PHONY: test
 test: $(AX_PATH) test_store test_client
