@@ -3,7 +3,7 @@
 CC ?= gcc
 AR ?= ar
 PKG_CONFIG ?= pkg-config
-LIBGCRYPT_CONFIG ?= libgcrypt-config
+NSS_CONFIG ?= nss-config
 MKDIR = mkdir
 MKDIR_P = mkdir -p
 CMAKE ?= cmake
@@ -26,10 +26,9 @@ LGCRYPT_SRC=$(LGCRYPT_DIR)/src
 LGCRYPT_BUILD=$(LGCRYPT_DIR)/build
 LGCRYPT_PATH=$(LGCRYPT_BUILD)/libgcrypt.a
 
-PKGCFG_C=$(shell $(PKG_CONFIG) --cflags sqlite3 glib-2.0) \
-		 $(shell $(LIBGCRYPT_CONFIG) --cflags)
+PKGCFG_C=$(shell $(PKG_CONFIG) --cflags sqlite3 glib-2.0)
 PKGCFG_L=$(shell $(PKG_CONFIG) --libs sqlite3 glib-2.0) \
-		 $(shell $(LIBGCRYPT_CONFIG) --libs)
+		 $(shell $(NSS_CONFIG) --libs)
 
 HEADERS=-I$(AX_DIR)/src -I$(LGCRYPT_DIR)/src
 CFLAGS += $(HEADERS) $(PKGCFG_C) -std=c11 -Wall -Wextra -Wpedantic \
